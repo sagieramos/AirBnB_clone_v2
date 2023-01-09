@@ -1,29 +1,33 @@
 #!/usr/bin/python3
-""" holds class User"""
-import models
-from models.base_model import BaseModel, Base
+"""This is the user class"""
 from os import getenv
-import sqlalchemy
-from sqlalchemy import Column, String
+from models.base_model import BaseModel, Base
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
+from models.review import Review
+from models.place import Place
 
 
 class User(BaseModel, Base):
-    """Representation of a user """
-    if models.storage_t == 'db':
-        __tablename__ = 'users'
-        email = Column(String(128), nullable=False)
-        password = Column(String(128), nullable=False)
-        first_name = Column(String(128), nullable=True)
-        last_name = Column(String(128), nullable=True)
-        places = relationship("Place", backref="user")
-        reviews = relationship("Review", backref="user")
-    else:
-        email = ""
-        password = ""
-        first_name = ""
-        last_name = ""
+    """This is the class for user
+    Attributes:
+        email: email address
+        password: password for you login
+        first_name: first name
+        last_name: last name
+        places: relationship to place
+        reviews: relationship to review
+    """
 
-    def __init__(self, *args, **kwargs):
-        """initializes user"""
-        super().__init__(*args, **kwargs)
+    __tablename__ = 'users'
+
+    email = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
+    first_name = Column(String(128), nullable=True)
+    last_name = Column(String(128), nullable=True)
+
+    places = relationship('Place', cascade='all, delete',
+                          backref='user')
+    reviews = relationship('Review', cascade='all, delete',
+                           backref='user')
